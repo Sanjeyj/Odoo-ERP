@@ -49,72 +49,46 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.98 0.005 240);
+  --foreground: oklch(0.15 0.02 240);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.15 0.02 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.15 0.02 240);
+  --primary: oklch(0.45 0.2 255);
+  --primary-foreground: oklch(0.98 0.005 240);
+  --secondary: oklch(0.95 0.01 240);
+  --secondary-foreground: oklch(0.15 0.02 240);
+  --muted: oklch(0.95 0.01 240);
+  --muted-foreground: oklch(0.5 0.02 240);
+  --accent: oklch(0.95 0.01 240);
+  --accent-foreground: oklch(0.15 0.02 240);
+  --destructive: oklch(0.55 0.22 25);
+  --border: oklch(0.9 0.01 240);
+  --input: oklch(0.9 0.01 240);
+  --ring: oklch(0.5 0.15 255);
+  --radius: 1rem;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: oklch(0.1 0.02 240);
+  --foreground: oklch(0.95 0.005 240);
+  --card: oklch(0.13 0.02 240);
+  --card-foreground: oklch(0.95 0.005 240);
+  --popover: oklch(0.13 0.02 240);
+  --popover-foreground: oklch(0.95 0.005 240);
+  --primary: oklch(0.6 0.18 255);
+  --primary-foreground: oklch(0.1 0.02 240);
+  --secondary: oklch(0.18 0.02 240);
+  --secondary-foreground: oklch(0.95 0.005 240);
+  --muted: oklch(0.18 0.02 240);
+  --muted-foreground: oklch(0.6 0.01 240);
+  --accent: oklch(0.18 0.02 240);
+  --accent-foreground: oklch(0.95 0.005 240);
+  --destructive: oklch(0.55 0.22 25);
+  --border: oklch(0.2 0.02 240);
+  --input: oklch(0.2 0.02 240);
+  --ring: oklch(0.6 0.18 255);
 }
 
 @layer base {
@@ -122,9 +96,116 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
   html {
     @apply font-sans;
   }
+}
+
+/* Glassmorphism custom classes */
+.glass-panel {
+  backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+}
+
+.dark .glass-panel {
+  background-color: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.08);
+}
+.dark .glass-card-hover:hover {
+  background-color: rgba(15, 23, 42, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Glass table */
+.glass-table {
+  @apply w-full border-collapse text-left;
+}
+.glass-table th {
+  @apply py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border/50;
+}
+.glass-table td {
+  @apply py-4 px-4 text-sm border-b border-border/30;
+}
+.glass-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.dark .glass-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+/* Badges alterations (high visual quality) */
+.badge-solid {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide;
+}
+
+.badge-draft {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800;
+}
+.badge-queued {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-amber-500/10 text-amber-500 border-amber-500/25;
+}
+.badge-in_progress {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-blue-500/10 text-blue-500 border-blue-500/25 animate-pulse;
+}
+.badge-completed {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-emerald-500/10 text-emerald-500 border-emerald-500/25;
+}
+.badge-cancelled {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-rose-500/10 text-rose-500 border-rose-500/25;
+}
+.badge-ready {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-cyan-500/10 text-cyan-500 border-cyan-500/25;
+}
+.badge-pending_approval {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-purple-500/10 text-purple-500 border-purple-500/25;
+}
+.badge-received {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-emerald-500/10 text-emerald-500 border-emerald-500/25;
+}
+.badge-sent {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-indigo-500/10 text-indigo-500 border-indigo-500/25;
+}
+.badge-confirmed {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-teal-500/10 text-teal-500 border-teal-500/25;
+}
+.badge-processing {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-orange-500/10 text-orange-500 border-orange-500/25;
+}
+.badge-shipped {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-indigo-500/10 text-indigo-500 border-indigo-500/25;
+}
+.badge-delivered {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 shadow-sm uppercase tracking-wide bg-emerald-500/10 text-emerald-500 border-emerald-500/25;
 }

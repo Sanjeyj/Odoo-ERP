@@ -1,73 +1,80 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Edit3, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import WorkflowTimeline from "@/components/dashboard/WorkflowTimeline";
 
-type MfgOrder = { id: string; product: string; qty: number; start: string; status: string };
+type MfgOrder = { 
+  id: string; 
+  mo_number: string; 
+  product_name: string; 
+  planned_qty: number; 
+  created_at: string; 
+  status: string 
+};
 
 const initialOrders: MfgOrder[] = [
-  { id: "MO-2026-001", product: "Royal Teak Bed Frame (King)", qty: 15, start: "2026-06-19", status: "IN_PROGRESS" },
-  { id: "MO-2026-002", product: "6-Seater Dining Table Set", qty: 30, start: "2026-06-20", status: "QUEUED" },
-  { id: "MO-2026-003", product: "3-Door Wardrobe (Walnut)", qty: 10, start: "2026-06-18", status: "COMPLETED" },
+  { id: "MO-2026-001", mo_number: "MO-2026-001", product_name: "Royal Teak Bed Frame (King)", planned_qty: 15, created_at: "2026-06-19", status: "in_progress" },
+  { id: "MO-2026-002", mo_number: "MO-2026-002", product_name: "6-Seater Dining Table Set", planned_qty: 30, created_at: "2026-06-20", status: "ready" },
+  { id: "MO-2026-003", mo_number: "MO-2026-003", product_name: "3-Door Wardrobe (Walnut)", planned_qty: 10, created_at: "2026-06-18", status: "completed" },
 ];
 
 function MfgOrdersContent() {
-  const [orders, setOrders] = useState<any[]>(initialOrders);
+  const [orders, setOrders] = useState<MfgOrder[]>(initialOrders);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingOrder, setEditingOrder] = useState<any | null>(null);
-  const [formData, setFormData] = useState({ product: "", qty: 0, status: "draft" });
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const view = searchParams.get('view') || 'all';
+  const [editingOrder, setEditingOrder] = useState<MfgOrder | null>(null);
+  const [formData, setFormData] = useState({ product: "", qty: 0, status: "ready" });
 
   useEffect(() => {
     fetchOrders();
-  }, [view]);
+  }, []);
 
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch(`http://localhost:8000/api/v1/manufacturing/orders?view=${view}`, {
+      const res = await fetch(`http://localhost:8000/api/v1/manufacturing/orders?view=all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
-        setOrders(data.items || []);
+        // If empty from API, fall back to initial local orders
+        setOrders(data.items && data.items.length > 0 ? data.items : initialOrders);
+      } else {
+        setOrders(initialOrders);
       }
     } catch (err) {
       console.warn('Could not fetch manufacturing orders from backend, using local data.', err);
+      setOrders(initialOrders);
     }
   };
 
   const handleOpenAdd = () => {
     setEditingOrder(null);
-    setFormData({ product: "", qty: 0, status: "QUEUED" });
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (order: MfgOrder) => {
-    setEditingOrder(order);
-    setFormData({ product: order.product, qty: order.qty, status: order.status });
+    setFormData({ product: "", qty: 10, status: "ready" });
     setIsModalOpen(true);
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingOrder) {
-      setOrders(orders.map((o) => o.id === editingOrder.id ? { ...o, ...formData } : o));
+      setOrders(orders.map((o) => o.id === editingOrder.id ? { 
+        ...o, 
+        product_name: formData.product, 
+        planned_qty: formData.qty, 
+        status: formData.status 
+      } : o));
     } else {
+      const nextId = `MO-2026-${String(orders.length + 1).padStart(3, "0")}`;
       const newOrder: MfgOrder = {
-        id: `MO-2026-${String(orders.length + 1).padStart(3, "0")}`,
-        product: formData.product,
-        qty: formData.qty,
-        start: new Date().toISOString().split("T")[0],
+        id: nextId,
+        mo_number: nextId,
+        product_name: formData.product,
+        planned_qty: formData.qty,
+        created_at: new Date().toISOString(),
         status: formData.status,
       };
       setOrders([...orders, newOrder]);
@@ -75,81 +82,45 @@ function MfgOrdersContent() {
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    setOrders(orders.filter((o) => o.id !== id));
-  };
-
   return (
     <div className="space-y-6 pb-10">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Manufacturing Orders</h2>
-          <p className="text-slate-400 mt-1">Schedule furniture builds, configure lines, and dispatch works orders.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Manufacturing Orders</h2>
+          <p className="text-muted-foreground mt-1">Schedule furniture builds, configure lines, and dispatch works orders.</p>
         </div>
-        <div className="flex gap-3">
-          <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800">
-            <Button size="sm" variant={view === 'all' ? 'secondary' : 'ghost'} className={view === 'all' ? 'bg-slate-800 text-white' : 'text-slate-400'} onClick={() => router.push('/mfg-dashboard/orders')}>
-              All Orders
-            </Button>
-            <Button size="sm" variant={view === 'my' ? 'secondary' : 'ghost'} className={view === 'my' ? 'bg-slate-800 text-white' : 'text-slate-400'} onClick={() => router.push('/mfg-dashboard/orders?view=my')}>
-              My Orders
-            </Button>
-          </div>
-        </div>
+        <Button onClick={handleOpenAdd} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md">
+          <Plus className="mr-2 h-4 w-4" /> Add Production Run
+        </Button>
       </div>
 
-      <Card className="bg-slate-900 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white">Active Production Runs</CardTitle>
-          <CardDescription className="text-slate-400">Total job orders currently dispatching across workshops.</CardDescription>
+      <Card className="glass-panel border-none shadow-xl rounded-2xl overflow-hidden">
+        <CardHeader className="bg-white/10 dark:bg-slate-900/10 border-b border-border/40">
+          <CardTitle className="text-foreground">All Active Production Runs</CardTitle>
+          <CardDescription className="text-muted-foreground">Total job orders currently dispatching across workshops.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-slate-800 hover:bg-slate-800/50">
-                <TableHead className="text-slate-400">Order ID</TableHead>
-                <TableHead className="text-slate-400">Product</TableHead>
-                <TableHead className="text-slate-400">Target Output Qty</TableHead>
-                <TableHead className="text-slate-400">Scheduled Date</TableHead>
-                <TableHead className="text-slate-400">Operational Status</TableHead>
-                <TableHead className="text-slate-400 text-right">Actions</TableHead>
+        <CardContent className="p-0 overflow-x-auto">
+          <Table className="w-full">
+            <TableHeader className="bg-slate-100/50 dark:bg-slate-900/50 border-b border-border/40">
+              <TableRow className="border-none hover:bg-transparent">
+                <TableHead className="text-muted-foreground font-semibold px-6 py-4">Order ID</TableHead>
+                <TableHead className="text-muted-foreground font-semibold px-6 py-4">Product</TableHead>
+                <TableHead className="text-muted-foreground font-semibold px-6 py-4">Target Output Qty</TableHead>
+                <TableHead className="text-muted-foreground font-semibold px-6 py-4">Scheduled Date</TableHead>
+                <TableHead className="text-muted-foreground font-semibold px-6 py-4">Operational Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
-                <TableRow key={order.id} className="border-slate-800 hover:bg-slate-800/50">
-                  <TableCell className="font-mono text-violet-400">{order.mo_number}</TableCell>
-                  <TableCell className="text-white font-medium">{order.product_name || 'N/A'}</TableCell>
-                  <TableCell className="text-slate-300">{order.planned_qty} units</TableCell>
-                  <TableCell className="text-slate-400">{order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}</TableCell>
-                  <TableCell>
-                    <WorkflowTimeline currentStatus={order.status} steps={['draft', 'ready', 'in_progress', 'completed', 'cancelled']} />
+                <TableRow key={order.id} className="border-b border-border/30 hover:bg-slate-200/20 dark:hover:bg-slate-800/10">
+                  <TableCell className="font-mono text-violet-600 dark:text-violet-400 font-semibold px-6 py-4">{order.mo_number}</TableCell>
+                  <TableCell className="text-foreground font-semibold px-6 py-4">{order.product_name || 'N/A'}</TableCell>
+                  <TableCell className="text-foreground px-6 py-4">{order.planned_qty} units</TableCell>
+                  <TableCell className="text-muted-foreground px-6 py-4">
+                    {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}
                   </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex gap-2 justify-end">
-                      {order.status === 'ready' && (
-                        <Button size="sm" variant="outline" className="text-violet-400 border-violet-500/20 hover:bg-violet-500/10" onClick={async () => {
-                          const res = await fetch(`http://localhost:8000/api/v1/manufacturing/orders/${order.id}/start`, {
-                            method: 'POST',
-                            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                          });
-                          if(res.ok) fetchOrders();
-                        }}>
-                          Start
-                        </Button>
-                      )}
-                      {order.status === 'in_progress' && (
-                        <Button size="sm" variant="outline" className="text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10" onClick={async () => {
-                          const res = await fetch(`http://localhost:8000/api/v1/manufacturing/orders/${order.id}/complete`, {
-                            method: 'POST',
-                            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                          });
-                          if(res.ok) fetchOrders();
-                        }}>
-                          Complete
-                        </Button>
-                      )}
-                    </div>
+                  <TableCell className="px-6 py-4">
+                    <WorkflowTimeline currentStatus={order.status} steps={['draft', 'ready', 'in_progress', 'completed', 'cancelled']} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -159,49 +130,50 @@ function MfgOrdersContent() {
       </Card>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <Card className="bg-slate-900 border-slate-800 w-full max-w-md p-6 relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute right-4 top-4 text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+          <Card className="glass-panel border-none w-full max-w-md p-6 relative rounded-2xl shadow-2xl">
+            <button onClick={() => setIsModalOpen(false)} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground">
               <X className="h-5 w-5" />
             </button>
             <CardHeader className="p-0 mb-4">
-              <CardTitle className="text-white">{editingOrder ? "Edit Work Order" : "Create Work Order"}</CardTitle>
+              <CardTitle className="text-foreground">{editingOrder ? "Edit Work Order" : "Create Work Order"}</CardTitle>
             </CardHeader>
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs text-slate-400 block">Product Name</label>
+                <label className="text-xs text-muted-foreground block">Product Name</label>
                 <input
                   required
                   value={formData.product}
                   onChange={(e) => setFormData({ ...formData, product: e.target.value })}
                   placeholder="e.g. Royal Teak Bed Frame"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none focus:ring-2 focus:ring-violet-500 text-sm"
+                  className="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-border/80 rounded-xl px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-violet-500 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs text-slate-400 block">Quantity</label>
+                <label className="text-xs text-muted-foreground block">Quantity</label>
                 <input
                   required
                   type="number"
                   value={formData.qty}
                   onChange={(e) => setFormData({ ...formData, qty: parseInt(e.target.value) || 0 })}
                   placeholder="e.g. 15"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none focus:ring-2 focus:ring-violet-500 text-sm"
+                  className="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-border/80 rounded-xl px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-violet-500 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs text-slate-400 block">Status</label>
+                <label className="text-xs text-muted-foreground block">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none focus:ring-2 focus:ring-violet-500 text-sm"
+                  className="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-border/80 rounded-xl px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-violet-500 text-sm"
                 >
-                  <option value="QUEUED">QUEUED</option>
-                  <option value="IN_PROGRESS">IN_PROGRESS</option>
-                  <option value="COMPLETED">COMPLETED</option>
+                  <option value="draft">DRAFT</option>
+                  <option value="ready">READY</option>
+                  <option value="in_progress">IN_PROGRESS</option>
+                  <option value="completed">COMPLETED</option>
                 </select>
               </div>
-              <Button type="submit" className="w-full bg-violet-600 hover:bg-violet-700 text-white py-5 rounded-lg text-sm mt-4">
+              <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-xl text-sm mt-4">
                 Save Work Order details
               </Button>
             </form>

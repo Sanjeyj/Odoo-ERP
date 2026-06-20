@@ -1,114 +1,129 @@
 "use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight, UserPlus } from "lucide-react";
+import { Sun, Moon, UserPlus, Eye, EyeOff } from "lucide-react";
 import Link from 'next/link';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dark, setDark] = useState(true);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+  }, [dark]);
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API call to FastAPI backend
     setTimeout(() => {
       setLoading(false);
       localStorage.setItem('token', 'simulated_jwt_token_customer');
-      window.location.href = "/dashboard";
+      localStorage.setItem('role', 'customer');
+      window.location.href = "/customer-dashboard";
     }, 1000);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      
-      {/* Background Decor */}
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${dark ? 'bg-slate-950' : 'bg-slate-100'}`}>
+
+      {/* Ambient blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[25%] -right-[10%] w-[50%] h-[50%] rounded-full bg-emerald-500/10 blur-[120px]" />
-        <div className="absolute bottom-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px]" />
+        <div className={`absolute -top-[20%] -right-[10%] w-[55%] h-[55%] rounded-full blur-[130px] ${dark ? 'bg-emerald-500/10' : 'bg-emerald-400/20'}`} />
+        <div className={`absolute bottom-[5%] -left-[10%] w-[45%] h-[45%] rounded-full blur-[130px] ${dark ? 'bg-indigo-500/10' : 'bg-indigo-400/20'}`} />
       </div>
+
+      {/* Theme toggle */}
+      <button
+        id="theme-toggle-register"
+        onClick={() => setDark(!dark)}
+        className={`fixed top-5 right-5 z-50 p-2.5 rounded-full border backdrop-blur-sm transition-all ${dark ? 'bg-white/10 border-white/20 text-white hover:bg-white/20' : 'bg-black/10 border-black/20 text-slate-800 hover:bg-black/20'}`}
+        title="Toggle theme"
+      >
+        {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      </button>
 
       <div className="w-full max-w-md relative z-10">
         <div className="flex justify-center mb-8">
-          <h1 className="text-4xl font-bold text-white tracking-wider">Smart<span className="text-indigo-500">ERP</span></h1>
+          <h1 className={`text-4xl font-bold tracking-wider ${dark ? 'text-white' : 'text-slate-900'}`}>
+            Smart<span className="text-indigo-500">ERP</span>
+          </h1>
         </div>
 
-        <Card className="bg-slate-900 border-slate-800 shadow-2xl backdrop-blur-xl bg-opacity-90">
-          <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-2xl font-bold text-white text-center">Create an Account</CardTitle>
-            <CardDescription className="text-slate-400 text-center">
-              Sign up as a customer to track your orders.
-            </CardDescription>
-          </CardHeader>
-          
-          <form onSubmit={handleRegister}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Full Name</label>
-                <div className="relative">
-                  <input 
-                    type="text" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                    placeholder="John Doe"
-                    required
-                  />
-                </div>
+        {/* Glass card */}
+        <div className={`rounded-2xl border p-8 shadow-2xl backdrop-blur-xl ${dark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-white/60'}`}>
+          <h2 className={`text-2xl font-bold text-center mb-1 ${dark ? 'text-white' : 'text-slate-900'}`}>Create an Account</h2>
+          <p className={`text-sm text-center mb-6 ${dark ? 'text-slate-400' : 'text-slate-500'}`}>
+            Sign up as a customer to track your orders.
+          </p>
+
+          <form onSubmit={handleRegister} className="space-y-4">
+            {/* Full Name */}
+            <div className="space-y-1.5">
+              <label className={`text-sm font-medium ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Full Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={`w-full rounded-xl px-4 py-3 text-sm outline-none border focus:ring-2 focus:ring-indigo-500 transition-all ${dark ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' : 'bg-white/80 border-slate-300 text-slate-900 placeholder-slate-400'}`}
+                placeholder="John Doe"
+                required
+              />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label className={`text-sm font-medium ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Email address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full rounded-xl px-4 py-3 text-sm outline-none border focus:ring-2 focus:ring-indigo-500 transition-all ${dark ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' : 'bg-white/80 border-slate-300 text-slate-900 placeholder-slate-400'}`}
+                placeholder="customer@example.com"
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div className="space-y-1.5">
+              <label className={`text-sm font-medium ${dark ? 'text-slate-300' : 'text-slate-700'}`}>Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full rounded-xl px-4 py-3 pr-10 text-sm outline-none border focus:ring-2 focus:ring-indigo-500 transition-all ${dark ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' : 'bg-white/80 border-slate-300 text-slate-900 placeholder-slate-400'}`}
+                  placeholder="••••••••"
+                  required
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-200">
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Email address</label>
-                <div className="relative">
-                  <input 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                    placeholder="customer@example.com"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Password</label>
-                <div className="relative">
-                  <input 
-                    type="password" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-              </div>
-            </CardContent>
-            
-            <CardFooter className="flex flex-col pt-2 pb-6">
-              <Button 
-                type="submit" 
-                disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 rounded-lg text-md font-medium transition-all group"
-              >
-                {loading ? 'Creating Account...' : 'Sign Up'}
-                {!loading && <UserPlus className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />}
-              </Button>
-              
-              <div className="mt-6 text-center">
-                <p className="text-sm text-slate-400">
-                  Already have an account?{' '}
-                  <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                    Sign in instead
-                  </Link>
-                </p>
-              </div>
-            </CardFooter>
+            </div>
+
+            <Button
+              id="register-submit"
+              type="submit"
+              disabled={loading}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 rounded-xl text-sm font-medium transition-all group mt-2"
+            >
+              {loading ? 'Creating Account...' : 'Sign Up'}
+              {!loading && <UserPlus className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />}
+            </Button>
+
+            <p className={`text-sm text-center pt-1 ${dark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Already have an account?{' '}
+              <Link href="/" className="text-indigo-400 hover:text-indigo-300 font-medium">
+                Sign in instead
+              </Link>
+            </p>
           </form>
-        </Card>
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight, Lock, Eye, EyeOff, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Sparkles, ArrowRight, Lock, Eye, EyeOff, Mail, ArrowLeft, CheckCircle2, Sun, Moon } from "lucide-react";
 import Link from 'next/link';
 
 // Credentials map: email -> { password, role, redirect }
@@ -22,6 +21,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [dark, setDark] = useState(true);
 
   // Forgot password states
   const [mode, setMode] = useState<'login' | 'forgot'>('login');
@@ -29,6 +29,10 @@ export default function LoginPage() {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotSuccess, setForgotSuccess] = useState('');
   const [forgotError, setForgotError] = useState('');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+  }, [dark]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,175 +75,176 @@ export default function LoginPage() {
         setForgotError(data.detail || 'Failed to request password reset.');
       }
     } catch (err) {
-      // Fallback in case backend is offline during client dev builds
       setForgotSuccess(`We have sent a password reset link to ${forgotEmail}. Please check your inbox (simulated).`);
     } finally {
       setForgotLoading(false);
     }
   };
 
+  const inputCls = `w-full rounded-xl px-4 py-3 text-sm outline-none border focus:ring-2 focus:ring-indigo-500 transition-all ${dark ? 'bg-white/5 border-white/10 text-white placeholder-slate-500' : 'bg-white/80 border-slate-300 text-slate-900 placeholder-slate-400'}`;
+  const labelCls = `text-sm font-medium ${dark ? 'text-slate-300' : 'text-slate-700'}`;
+  const glassCls = `rounded-2xl border p-8 shadow-2xl backdrop-blur-xl ${dark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-white/60'}`;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      {/* Background Decor */}
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${dark ? 'bg-slate-950' : 'bg-slate-100'}`}>
+      {/* Ambient blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[25%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-500/10 blur-[120px]" />
-        <div className="absolute bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-emerald-500/10 blur-[120px]" />
+        <div className={`absolute -top-[25%] -left-[10%] w-[50%] h-[50%] rounded-full blur-[130px] ${dark ? 'bg-indigo-500/10' : 'bg-indigo-400/20'}`} />
+        <div className={`absolute bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full blur-[130px] ${dark ? 'bg-emerald-500/10' : 'bg-emerald-400/20'}`} />
       </div>
+
+      {/* Theme toggle */}
+      <button
+        id="theme-toggle-login"
+        onClick={() => setDark(!dark)}
+        className={`fixed top-5 right-5 z-50 p-2.5 rounded-full border backdrop-blur-sm transition-all ${dark ? 'bg-white/10 border-white/20 text-white hover:bg-white/20' : 'bg-black/10 border-black/20 text-slate-800 hover:bg-black/20'}`}
+        title="Toggle theme"
+      >
+        {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      </button>
 
       <div className="w-full max-w-md relative z-10">
         <div className="flex justify-center mb-8">
-          <h1 className="text-4xl font-bold text-white tracking-wider">Smart<span className="text-indigo-500">ERP</span></h1>
+          <h1 className={`text-4xl font-bold tracking-wider ${dark ? 'text-white' : 'text-slate-900'}`}>
+            Smart<span className="text-indigo-500">ERP</span>
+          </h1>
         </div>
 
         {mode === 'login' ? (
-          <Card className="bg-slate-900 border-slate-800 shadow-2xl">
-            <CardHeader className="space-y-1 pb-6">
-              <CardTitle className="text-2xl font-bold text-white text-center">Welcome back</CardTitle>
-              <CardDescription className="text-slate-400 text-center">
-                Sign in with your role credentials to access your portal.
-              </CardDescription>
-            </CardHeader>
+          <div className={glassCls}>
+            <h2 className={`text-2xl font-bold text-center mb-1 ${dark ? 'text-white' : 'text-slate-900'}`}>Welcome back</h2>
+            <p className={`text-sm text-center mb-6 ${dark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Sign in with your role credentials to access your portal.
+            </p>
 
-            <form onSubmit={handleLogin}>
-              <CardContent className="space-y-4">
-                {error && (
-                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-sm text-rose-400 text-center">
-                    {error}
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Email address</label>
+            <form onSubmit={handleLogin} className="space-y-4">
+              {error && (
+                <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-sm text-rose-400 text-center">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className={labelCls}>Email address</label>
+                <input
+                  id="login-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={inputCls}
+                  placeholder="yourname@smarterp.com"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className={labelCls}>Password</label>
+                  <button
+                    type="button"
+                    onClick={() => { setForgotEmail(email); setMode('forgot'); setForgotSuccess(''); setForgotError(''); }}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                <div className="relative">
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                    placeholder="yourname@smarterp.com"
+                    id="login-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={inputCls + ' pr-10'}
+                    placeholder="••••••••"
                     required
                   />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-200">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <label className="text-sm font-medium text-slate-300">Password</label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForgotEmail(email);
-                        setMode('forgot');
-                        setForgotSuccess('');
-                        setForgotError('');
-                      }}
-                      className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
-                    >
-                      Forgot Password?
-                    </button>
-                  </div>
+              </div>
+
+              <Button
+                id="login-submit"
+                type="submit"
+                disabled={loading}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-xl text-sm font-medium transition-all group mt-2"
+              >
+                {loading ? 'Authenticating...' : 'Sign In'}
+                {!loading && <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />}
+              </Button>
+
+              <div className={`flex items-center justify-center p-3 rounded-xl border mt-2 ${dark ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-200'}`}>
+                <Sparkles className="h-4 w-4 text-indigo-400 mr-2" />
+                <span className="text-xs text-indigo-400">Multi-Role Enterprise Access Control</span>
+              </div>
+
+              <p className={`text-sm text-center ${dark ? 'text-slate-400' : 'text-slate-500'}`}>
+                Don't have an account?{' '}
+                <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
+                  Sign up
+                </Link>
+              </p>
+            </form>
+          </div>
+        ) : (
+          <div className={glassCls}>
+            <div className="flex items-center space-x-2 text-indigo-400 mb-3">
+              <Lock className="h-4 w-4" />
+              <span className="text-xs font-semibold uppercase tracking-wider">Security Portal</span>
+            </div>
+            <h2 className={`text-2xl font-bold mb-1 ${dark ? 'text-white' : 'text-slate-900'}`}>Reset Password</h2>
+            <p className={`text-sm mb-6 ${dark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Enter your registered email and we'll send a reset link.
+            </p>
+
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              {forgotError && (
+                <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-sm text-rose-400 text-center">
+                  {forgotError}
+                </div>
+              )}
+              {forgotSuccess ? (
+                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-sm text-emerald-400 flex flex-col items-center text-center space-y-2">
+                  <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+                  <p className="font-semibold">Reset Link Dispatched</p>
+                  <p className="text-xs text-slate-400">{forgotSuccess}</p>
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <label className={labelCls}>Email address</label>
                   <div className="relative">
                     <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 pr-10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                      placeholder="••••••••"
+                      type="email"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      className={inputCls + ' pl-10'}
+                      placeholder="yourname@smarterp.com"
                       required
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3.5 text-slate-500 hover:text-slate-300">
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
+                    <Mail className="absolute left-3 top-3.5 h-4 w-4 text-slate-500" />
                   </div>
                 </div>
-              </CardContent>
+              )}
 
-              <CardFooter className="flex flex-col pt-2 pb-6">
+              {!forgotSuccess && (
                 <Button
                   type="submit"
-                  disabled={loading}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-lg text-md font-medium transition-all group"
+                  disabled={forgotLoading}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-xl text-sm font-medium transition-all"
                 >
-                  {loading ? 'Authenticating...' : 'Sign In'}
-                  {!loading && <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />}
+                  {forgotLoading ? 'Processing...' : 'Send Reset Link'}
                 </Button>
-
-                <div className="mt-6 flex items-center justify-center p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                  <Sparkles className="h-4 w-4 text-indigo-400 mr-2" />
-                  <span className="text-xs text-indigo-300">Multi-Role Enterprise Access Control</span>
-                </div>
-
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-slate-400">
-                    Don't have an account?{' '}
-                    <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                      Sign up
-                    </Link>
-                  </p>
-                </div>
-              </CardFooter>
+              )}
+              <button
+                type="button"
+                onClick={() => setMode('login')}
+                className={`flex items-center justify-center w-full text-sm transition-colors ${dark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" /> Back to Login
+              </button>
             </form>
-          </Card>
-        ) : (
-          <Card className="bg-slate-900 border-slate-800 shadow-2xl">
-            <CardHeader className="space-y-1 pb-6">
-              <div className="flex items-center space-x-2 text-indigo-400 mb-2">
-                <Lock className="h-5 w-5" />
-                <span className="text-xs font-semibold uppercase tracking-wider">Security Portal</span>
-              </div>
-              <CardTitle className="text-2xl font-bold text-white">Reset Password</CardTitle>
-              <CardDescription className="text-slate-400">
-                Enter your registered email address and we will forward a password reset link.
-              </CardDescription>
-            </CardHeader>
-
-            <form onSubmit={handleForgotPassword}>
-              <CardContent className="space-y-4">
-                {forgotError && (
-                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-sm text-rose-400 text-center">
-                    {forgotError}
-                  </div>
-                )}
-                {forgotSuccess ? (
-                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-sm text-emerald-400 flex flex-col items-center text-center space-y-2">
-                    <CheckCircle2 className="h-8 w-8 text-emerald-400" />
-                    <p className="font-semibold">Reset Link Dispatched</p>
-                    <p className="text-xs text-slate-400">{forgotSuccess}</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">Email address</label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        value={forgotEmail}
-                        onChange={(e) => setForgotEmail(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                        placeholder="yourname@smarterp.com"
-                        required
-                      />
-                      <Mail className="absolute left-3 top-3.5 h-5 w-5 text-slate-500" />
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-
-              <CardFooter className="flex flex-col pt-2 pb-6 space-y-4">
-                {!forgotSuccess && (
-                  <Button
-                    type="submit"
-                    disabled={forgotLoading}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-lg text-md font-medium transition-all"
-                  >
-                    {forgotLoading ? 'Processing...' : 'Send Reset Link'}
-                  </Button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setMode('login')}
-                  className="flex items-center justify-center text-slate-400 hover:text-white transition-colors text-sm"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" /> Back to Login
-                </button>
-              </CardFooter>
-            </form>
-          </Card>
+          </div>
         )}
       </div>
     </div>
