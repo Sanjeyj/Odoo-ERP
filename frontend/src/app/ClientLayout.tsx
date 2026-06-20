@@ -14,18 +14,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   const isAuthPage = pathname === "/" || pathname === "/register";
 
+  const customerRoutes = ['/customer-dashboard', '/customer-products', '/customer-orders'];
+
   useEffect(() => {
-    // Check auth state
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role') || 'admin';
     setUserRole(role);
     
     if (!token && !isAuthPage) {
-      // Unauthenticated users trying to access protected routes go to login
       router.push('/');
     } else if (token) {
       if (role === 'customer') {
-        if (pathname !== '/customer-dashboard') {
+        if (!customerRoutes.includes(pathname)) {
           router.push('/customer-dashboard');
         } else {
           setIsAuthenticated(true);
@@ -33,7 +33,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         }
       } else {
         // Admin
-        if (isAuthPage || pathname === '/customer-dashboard') {
+        if (isAuthPage || customerRoutes.includes(pathname)) {
           router.push('/dashboard');
         } else {
           setIsAuthenticated(true);

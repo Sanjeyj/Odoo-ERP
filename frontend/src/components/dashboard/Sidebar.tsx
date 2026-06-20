@@ -1,4 +1,4 @@
-import { Home, Package, ShoppingCart, Activity, Settings, Factory, Truck } from 'lucide-react';
+import { Home, Package, ShoppingCart, Activity, Settings, Factory, Truck, Users } from 'lucide-react';
 import Link from 'next/link';
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { name: 'Purchasing', icon: ShoppingCart, href: '/purchasing' },
   { name: 'Deliveries', icon: Truck, href: '/deliveries' },
   { name: 'Analytics', icon: Activity, href: '/analytics' },
+  { name: 'Team Settings', icon: Users, href: '/admin-settings' },
   { name: 'Settings', icon: Settings, href: '/settings' },
 ];
 
