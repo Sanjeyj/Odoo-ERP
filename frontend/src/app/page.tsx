@@ -18,7 +18,14 @@ export default function LoginPage() {
     setTimeout(() => {
       setLoading(false);
       localStorage.setItem('token', 'simulated_jwt_token');
-      window.location.href = "/dashboard";
+      
+      if (email.toLowerCase() === 'customer@smarterp.com') {
+        localStorage.setItem('role', 'customer');
+        window.location.href = "/customer-dashboard";
+      } else {
+        localStorage.setItem('role', 'admin');
+        window.location.href = "/dashboard";
+      }
     }, 1000);
   };
 

@@ -1,13 +1,10 @@
-import KPICards from "@/components/dashboard/KPICards";
-import AIRecommendations from "@/components/dashboard/AIRecommendations";
-import RevenueChart from "@/components/dashboard/RevenueChart";
-import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
+import RawMaterialShops from "@/components/dashboard/RawMaterialShops";
 
 export default function Dashboard() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-10">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight text-white">Command Center</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-white">Admin Dashboard</h2>
         <div className="flex items-center space-x-2">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -17,13 +14,8 @@ export default function Dashboard() {
         </div>
       </div>
       
-      <AIRecommendations />
-      <KPICards />
+      <RawMaterialShops />
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <RevenueChart />
-        <ActivityTimeline />
-      </div>
     </div>
   );
 }

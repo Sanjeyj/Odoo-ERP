@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     PROJECT_NAME: str = "SmartERP"
     API_V1_STR: str = "/api/v1"
-    DATABASE_URL: str = "postgresql://postgres:postgrespassword@localhost:5432/smarterp"
+    DATABASE_URL: str = "sqlite:///./smarterp.db"
     REDIS_URL: str = "redis://localhost:6379/0"
     CELERY_BROKER_URL: str = "redis://localhost:6379/0"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/0"
